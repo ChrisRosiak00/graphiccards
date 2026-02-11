@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTopComparisons } from '../../data/gpus';
+
+const comparisons = getTopComparisons();
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "GPU Comparisons — Head-to-Head Graphics Card Matchups",
+  "description": `Compare ${comparisons.length}+ graphics cards head-to-head. Side-by-side specs, benchmarks, and verdicts for every major GPU matchup.`,
+  "url": "https://graphiccards.com/compare"
+};
+---
+
+<BaseLayout
+  title={`GPU Comparisons — ${comparisons.length}+ Head-to-Head Graphics Card Matchups (2026) | GraphicCards.com`}
+  description={`Compare graphics cards side by side. ${comparisons.length}+ GPU matchups with detailed spec comparisons, benchmark charts, and expert verdicts. Find out which GPU is right for you.`}
+  canonical="/compare"
+  schema={schema}
+>
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <header class="mb-12">
+      <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-gray-300 transition-colors">Home</a>
+        <span>/</span>
+        <span class="text-gray-300">Compare GPUs</span>
+      </nav>
+
+      <h1 class="font-display font-extrabold text-4xl md:text-5xl tracking-tight mb-4">
+        GPU Comparisons
+      </h1>
+      <p class="text-lg text-gray-400 max-w-2xl">
+        Side-by-side spec comparisons, benchmark data, and our expert verdict for the most popular GPU matchups of 2026.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {comparisons.map(comp => (
+        <a href={`/compare/${comp.slug}`} class="card p-6 group block">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style={`background: ${comp.gpu1.brand === 'NVIDIA' ? '#76b90020' : comp.gpu1.brand === 'AMD' ? '#ed1c2420' : '#0071c520'}; color: ${comp.gpu1.brand === 'NVIDIA' ? '#76b900' : comp.gpu1.brand === 'AMD' ? '#ed1c24' : '#0071c5'};`}>
+              {comp.gpu1.brand}
+            </span>
+            <span class="text-gray-600 font-display font-bold text-sm">VS</span>
+            <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style={`background: ${comp.gpu2.brand === 'NVIDIA' ? '#76b90020' : comp.gpu2.brand === 'AMD' ? '#ed1c2420' : '#0071c520'}; color: ${comp.gpu2.brand === 'NVIDIA' ? '#76b900' : comp.gpu2.brand === 'AMD' ? '#ed1c24' : '#0071c5'};`}>
+              {comp.gpu2.brand}
+            </span>
+          </div>
+
+          <h2 class="font-display font-semibold text-white text-center mb-4 group-hover:text-accent-indigo transition-colors">
+            {comp.gpu1.name.replace(/NVIDIA |AMD |Intel /, '')}
+            <span class="text-gray-600 mx-2">vs</span>
+            {comp.gpu2.name.replace(/NVIDIA |AMD |Intel /, '')}
+          </h2>
+
+          <div class="grid grid-cols-2 gap-4 text-center text-sm mb-4">
+            <div>
+              <div class="text-gray-500">{comp.gpu1.vram}GB {comp.gpu1.vramType}</div>
+              <div class="text-white font-semibold">${comp.gpu1.currentPrice}</div>
+            </div>
+            <div>
+              <div class="text-gray-500">{comp.gpu2.vram}GB {comp.gpu2.vramType}</div>
+              <div class="text-white font-semibold">${comp.gpu2.currentPrice}</div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-white/5 text-center">
+            <span class="text-xs text-accent-indigo font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              Full Comparison
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

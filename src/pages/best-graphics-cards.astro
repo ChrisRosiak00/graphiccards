@@ -1,0 +1,201 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GPUCard from '../components/GPUCard.astro';
+import { gpus, formatPrice } from '../data/gpus';
+
+const today = new Date().toISOString().split('T')[0];
+
+// Curated picks
+const bestOverall = gpus.find(g => g.slug === 'nvidia-rtx-5080')!;
+const bestFlagship = gpus.find(g => g.slug === 'nvidia-rtx-5090')!;
+const bestValue = gpus.find(g => g.slug === 'nvidia-rtx-5070')!;
+const bestAMD = gpus.find(g => g.slug === 'amd-rx-9070-xt')!;
+const bestBudget = gpus.find(g => g.slug === 'amd-rx-9060-xt')!;
+const bestIntel = gpus.find(g => g.slug === 'intel-arc-b580')!;
+const best1440p = gpus.find(g => g.slug === 'nvidia-rtx-5070-ti')!;
+const best4K = gpus.find(g => g.slug === 'nvidia-rtx-5080')!;
+const bestPrevGen = gpus.find(g => g.slug === 'nvidia-rtx-4070-super')!;
+
+const picks = [
+  { label: 'Best Overall', pick: bestOverall, reason: 'The perfect balance of price, performance, and features. The RTX 5080 delivers near-flagship 4K gaming with DLSS 4 at half the cost of the 5090.' },
+  { label: 'Best Flagship', pick: bestFlagship, reason: 'If money is no object, the RTX 5090 is the most powerful consumer GPU ever made. 32GB GDDR7, unmatched ray tracing, and incredible AI acceleration.' },
+  { label: 'Best Value', pick: bestValue, reason: 'NVIDIA claims RTX 4090-class performance at $549. With DLSS 4, the RTX 5070 punches way above its weight and is the most compelling value this generation.' },
+  { label: 'Best AMD GPU', pick: bestAMD, reason: 'The RX 9070 XT brings 16GB VRAM and RTX 4080-class rasterization at $549. If you don\'t need DLSS, this is outstanding.' },
+  { label: 'Best Budget GPU', pick: bestBudget, reason: '16GB VRAM at $329 is unheard of. The RX 9060 XT is the budget king, perfect for 1080p gaming and surprisingly capable at 1440p with FSR 4.' },
+  { label: 'Best Intel GPU', pick: bestIntel, reason: 'The Arc B580 disrupted the budget tier with 12GB VRAM at $249. Drivers have matured significantly, making it a legitimate choice.' },
+  { label: 'Best for 1440p', pick: best1440p, reason: 'The RTX 5070 Ti is the 1440p sweet spot — high enough performance for 144Hz+ gaming with headroom for ray tracing and DLSS 4.' },
+  { label: 'Best for 4K', pick: best4K, reason: 'The RTX 5080 handles 4K gaming beautifully. With DLSS 4, even the most demanding titles run smoothly at high settings.' },
+  { label: 'Best Previous-Gen Deal', pick: bestPrevGen, reason: 'The RTX 4070 SUPER at current discounted prices is a steal. Proven, efficient, and still very capable for 1440p gaming.' },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Best Graphics Cards 2026 — Top GPU Picks for Every Budget",
+  "description": "Our expert picks for the best graphics cards in 2026. From the flagship RTX 5090 to budget gems, find the perfect GPU for gaming, content creation, and AI workloads.",
+  "dateModified": today,
+  "author": { "@type": "Organization", "name": "GraphicCards.com" },
+  "publisher": { "@type": "Organization", "name": "GraphicCards.com" }
+};
+---
+
+<BaseLayout
+  title="Best Graphics Cards 2026 — Top GPU Picks for Gaming, 4K, Budget & More | GraphicCards.com"
+  description="The definitive guide to the best graphics cards in 2026. Expert-tested picks for every budget: best overall, best value, best for 4K, best AMD, best budget GPU, and more. Updated monthly."
+  canonical="/best-graphics-cards"
+  type="article"
+  modifiedDate={today}
+  schema={schema}
+>
+  <article class="max-w-5xl mx-auto px-6 py-12">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-8">
+      <a href="/" class="hover:text-gray-300 transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-gray-300">Best Graphics Cards</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="mb-12">
+      <div class="section-label">Updated {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
+      <h1 class="font-display font-extrabold text-4xl md:text-5xl tracking-tight mb-4">
+        Best Graphics Cards in 2026
+      </h1>
+      <p class="text-lg text-gray-400 max-w-3xl leading-relaxed">
+        We've tested every major GPU from NVIDIA's RTX 50-series, AMD's RX 9000-series, and Intel's Arc Battlemage lineup to find the best graphics cards for every budget and use case. Here are our top picks.
+      </p>
+    </header>
+
+    <!-- Quick Answer (GEO optimized) -->
+    <div class="card p-8 mb-12" style="background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04));">
+      <h2 class="font-display font-bold text-xl mb-4 text-white">Quick Answer: What is the best graphics card in 2026?</h2>
+      <p class="text-gray-300 leading-relaxed mb-4">
+        <strong class="text-white">The NVIDIA GeForce RTX 5080 is the best overall graphics card in 2026.</strong> At {formatPrice(bestOverall.currentPrice)}, it delivers exceptional 4K gaming performance with 16GB GDDR7 and DLSS 4 support. For the best value, the RTX 5070 at {formatPrice(bestValue.currentPrice)} offers RTX 4090-class performance with DLSS 4. Budget buyers should look at the AMD RX 9060 XT ({formatPrice(bestBudget.currentPrice)}) which offers an incredible 16GB VRAM.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        {picks.slice(0, 4).map(p => (
+          <a href={`/gpu/${p.pick.slug}`} class="text-xs font-medium px-3 py-1.5 bg-accent-indigo/10 border border-accent-indigo/20 text-accent-indigo rounded-full hover:bg-accent-indigo/20 transition-colors">
+            {p.label}: {p.pick.name.replace(/NVIDIA |AMD |Intel /, '')}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <nav class="card p-6 mb-12">
+      <h2 class="font-display font-semibold text-white mb-4">Table of Contents</h2>
+      <ol class="space-y-2">
+        {picks.map((p, i) => (
+          <li>
+            <a href={`#pick-${i}`} class="text-sm text-gray-400 hover:text-accent-indigo transition-colors flex items-center gap-2">
+              <span class="text-gray-600 font-mono w-5">{i + 1}.</span>
+              {p.label} — {p.pick.name.replace(/NVIDIA |AMD |Intel /, '')}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Individual Picks -->
+    {picks.map((pick, i) => (
+      <section id={`pick-${i}`} class="mb-16 scroll-mt-24">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="font-display font-bold text-4xl text-white/5">{String(i + 1).padStart(2, '0')}</span>
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-widest text-accent-indigo">{pick.label}</span>
+            <h2 class="font-display font-bold text-2xl text-white">
+              <a href={`/gpu/${pick.pick.slug}`} class="hover:text-accent-indigo transition-colors">
+                {pick.pick.name}
+              </a>
+            </h2>
+          </div>
+        </div>
+
+        <div class="card p-6 md:p-8">
+          <div class="flex flex-wrap gap-6 mb-6">
+            <div>
+              <div class="text-xs text-gray-500">Price</div>
+              <div class="font-display font-bold text-xl text-white">{formatPrice(pick.pick.currentPrice)}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">VRAM</div>
+              <div class="font-display font-bold text-xl text-white">{pick.pick.vram}GB {pick.pick.vramType}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">TDP</div>
+              <div class="font-display font-bold text-xl text-white">{pick.pick.tdp}W</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">1440p Score</div>
+              <div class="font-display font-bold text-xl text-white">{pick.pick.benchmarks.gaming1440p}/100</div>
+            </div>
+          </div>
+
+          <p class="text-gray-300 leading-relaxed mb-6">{pick.reason}</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <h4 class="text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Pros</h4>
+              <ul class="space-y-1">
+                {pick.pick.pros.slice(0, 3).map(pro => (
+                  <li class="text-sm text-gray-400 flex items-start gap-2">
+                    <span class="text-accent-emerald shrink-0">+</span> {pro}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Cons</h4>
+              <ul class="space-y-1">
+                {pick.pick.cons.slice(0, 3).map(con => (
+                  <li class="text-sm text-gray-400 flex items-start gap-2">
+                    <span class="text-red-400 shrink-0">-</span> {con}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <a href={`/gpu/${pick.pick.slug}`} class="text-sm text-accent-indigo font-medium hover:text-accent-cyan transition-colors inline-flex items-center gap-1">
+            Read full {pick.pick.name.replace(/NVIDIA |AMD |Intel /, '')} review
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </section>
+    ))}
+
+    <!-- Buying Guide Content (GEO optimized) -->
+    <section class="prose-custom mt-16 pt-16 border-t border-white/5">
+      <h2>How to Choose the Right Graphics Card in 2026</h2>
+      <p>Choosing the right GPU depends on your resolution, budget, and what you'll use it for. Here's a quick framework:</p>
+
+      <h3>What resolution do you game at?</h3>
+      <ul>
+        <li><strong>1080p:</strong> The RTX 5060, RX 9060 XT, or Intel Arc B580 are all excellent. Don't overspend here — even budget GPUs handle 1080p beautifully.</li>
+        <li><strong>1440p:</strong> This is the sweet spot in 2026. The RTX 5070, RX 9070, or RTX 5070 Ti will give you high-refresh 1440p gaming.</li>
+        <li><strong>4K:</strong> You want the RTX 5080 or better. The RTX 5090 is overkill for most, but the 5080 handles 4K with DLSS 4 flawlessly.</li>
+      </ul>
+
+      <h3>How much VRAM do you need?</h3>
+      <p>In 2026, <strong>12GB is the minimum</strong> we recommend for a new GPU purchase. 16GB is ideal for future-proofing, and 24-32GB is for professional workloads and 4K+ gaming at ultra settings. Games are using more VRAM than ever — don't buy an 8GB card unless you're on a strict budget.</p>
+
+      <h3>NVIDIA vs AMD vs Intel — which brand?</h3>
+      <ul>
+        <li><strong>NVIDIA</strong> leads in ray tracing, DLSS quality, and AI/ML performance. Their software ecosystem (CUDA, NVENC, DLSS 4) is unmatched.</li>
+        <li><strong>AMD</strong> offers the best raw rasterization per dollar. The RX 9070 XT is particularly compelling. FSR 4 has improved but still trails DLSS.</li>
+        <li><strong>Intel</strong> is the value disruptor. The Arc B580 offers more VRAM per dollar than anyone. Drivers have improved dramatically but are still catching up.</li>
+      </ul>
+
+      <h3>What about AI and content creation?</h3>
+      <p>If you do AI/ML work, NVIDIA is the clear choice thanks to CUDA and tensor cores. The RTX 5090 and 5080 are exceptional for local AI inference. For video editing, any modern GPU with hardware encoding (NVENC or AMF) will work well.</p>
+    </section>
+
+    <!-- All GPUs Link -->
+    <div class="mt-12 text-center">
+      <a href="/gpus" class="btn-primary">
+        Browse All {gpus.length}+ Graphics Cards
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </article>
+</BaseLayout>

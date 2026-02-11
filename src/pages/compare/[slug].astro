@@ -1,0 +1,256 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BenchmarkChart from '../../components/BenchmarkChart.astro';
+import { getTopComparisons, getBrandColor, getTierLabel, formatPrice } from '../../data/gpus';
+
+export function getStaticPaths() {
+  return getTopComparisons().map(comp => ({
+    params: { slug: comp.slug },
+    props: { gpu1: comp.gpu1, gpu2: comp.gpu2 },
+  }));
+}
+
+const { gpu1, gpu2 } = Astro.props;
+const g1Short = gpu1.name.replace(/NVIDIA |AMD |Intel /, '');
+const g2Short = gpu2.name.replace(/NVIDIA |AMD |Intel /, '');
+const today = new Date().toISOString().split('T')[0];
+
+// Determine winner in key categories
+function winner(key: string) {
+  const v1 = (gpu1.benchmarks as any)[key];
+  const v2 = (gpu2.benchmarks as any)[key];
+  if (v1 > v2) return gpu1.name;
+  if (v2 > v1) return gpu2.name;
+  return 'Tie';
+}
+
+const overallScore1 = Object.values(gpu1.benchmarks).reduce((a: number, b: number) => a + b, 0);
+const overallScore2 = Object.values(gpu2.benchmarks).reduce((a: number, b: number) => a + b, 0);
+const overallWinner = overallScore1 > overallScore2 ? gpu1 : gpu2;
+const overallLoser = overallScore1 > overallScore2 ? gpu2 : gpu1;
+const priceDiff = Math.abs(gpu1.currentPrice - gpu2.currentPrice);
+const cheaperGPU = gpu1.currentPrice < gpu2.currentPrice ? gpu1 : gpu2;
+const valueWinner = (overallScore1 / gpu1.currentPrice) > (overallScore2 / gpu2.currentPrice) ? gpu1 : gpu2;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${g1Short} vs ${g2Short} — Which GPU Should You Buy in 2026?`,
+  "description": `Head-to-head comparison of the ${gpu1.name} and ${gpu2.name}. Side-by-side specs, gaming benchmarks at 1080p/1440p/4K, ray tracing, pricing, and our verdict.`,
+  "dateModified": today,
+  "author": { "@type": "Organization", "name": "GraphicCards.com" }
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Which is better, the ${g1Short} or ${g2Short}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `In overall performance, the ${overallWinner.name} wins with a combined benchmark score of ${Math.max(overallScore1, overallScore2)} vs ${Math.min(overallScore1, overallScore2)}. However, the ${valueWinner.name} offers better value for money. The ${g1Short} costs ${formatPrice(gpu1.currentPrice)} while the ${g2Short} costs ${formatPrice(gpu2.currentPrice)}.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Is the ${g1Short} worth the ${priceDiff > 0 ? `$${priceDiff} price difference` : 'same price'} over the ${g2Short}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `The ${gpu1.name} (${formatPrice(gpu1.currentPrice)}) vs the ${gpu2.name} (${formatPrice(gpu2.currentPrice)}) — the ${overallWinner.name} delivers better raw performance, while the ${valueWinner.name} offers better performance per dollar. For 4K gaming, the ${winner('gaming4k')} is the better choice. For value, go with the ${valueWinner.name}.`
+      }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={`${g1Short} vs ${g2Short} — Head-to-Head GPU Comparison (2026) | GraphicCards.com`}
+  description={`${gpu1.name} vs ${gpu2.name} — full comparison with specs, 1080p/1440p/4K gaming benchmarks, ray tracing scores, pricing, and our verdict. Find out which GPU is right for you.`}
+  canonical={`/compare/${Astro.params.slug}`}
+  type="article"
+  modifiedDate={today}
+  schema={schema}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+  <article class="max-w-5xl mx-auto px-6 py-12">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-8">
+      <a href="/" class="hover:text-gray-300 transition-colors">Home</a>
+      <span>/</span>
+      <a href="/compare" class="hover:text-gray-300 transition-colors">Compare</a>
+      <span>/</span>
+      <span class="text-gray-300">{g1Short} vs {g2Short}</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="text-center mb-12">
+      <h1 class="font-display font-extrabold text-3xl md:text-5xl tracking-tight mb-4">
+        {g1Short} <span class="text-gray-600">vs</span> {g2Short}
+      </h1>
+      <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+        A detailed head-to-head comparison of the {gpu1.name} and {gpu2.name}. Which GPU should you buy in 2026?
+      </p>
+    </header>
+
+    <!-- Quick Verdict -->
+    <div class="card p-8 mb-12 text-center" style="background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04));">
+      <div class="text-xs font-semibold uppercase tracking-widest text-accent-indigo mb-3">Quick Verdict</div>
+      <p class="text-gray-300 leading-relaxed max-w-2xl mx-auto">
+        <strong class="text-white">The {overallWinner.name} wins on overall performance</strong>, scoring higher across our benchmark suite. 
+        {valueWinner.slug !== overallWinner.slug 
+          ? `However, the ${valueWinner.name} at ${formatPrice(valueWinner.currentPrice)} delivers better performance per dollar, making it the value pick.`
+          : `It also offers the better value at ${formatPrice(valueWinner.currentPrice)}.`
+        }
+        {priceDiff > 100 
+          ? ` The $${priceDiff} price difference is significant — consider whether the extra performance justifies the cost for your use case.`
+          : priceDiff > 0 ? ` The $${priceDiff} price gap is modest.` : ''
+        }
+      </p>
+    </div>
+
+    <!-- Side-by-Side Specs -->
+    <section class="mb-12">
+      <h2 class="font-display font-bold text-2xl mb-6">Specifications Comparison</h2>
+      <div class="card overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="px-6 py-4 text-left text-gray-500 font-medium">Spec</th>
+              <th class="px-6 py-4 text-center font-semibold text-white">{g1Short}</th>
+              <th class="px-6 py-4 text-center font-semibold text-white">{g2Short}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['Price', formatPrice(gpu1.currentPrice), formatPrice(gpu2.currentPrice)],
+              ['MSRP', formatPrice(gpu1.msrp), formatPrice(gpu2.msrp)],
+              ['Architecture', gpu1.architecture, gpu2.architecture],
+              ['VRAM', `${gpu1.vram}GB ${gpu1.vramType}`, `${gpu2.vram}GB ${gpu2.vramType}`],
+              ['Memory Bus', `${gpu1.busWidth}-bit`, `${gpu2.busWidth}-bit`],
+              ['Boost Clock', `${gpu1.boostClock} MHz`, `${gpu2.boostClock} MHz`],
+              ['Base Clock', `${gpu1.baseClock} MHz`, `${gpu2.baseClock} MHz`],
+              ['TDP', `${gpu1.tdp}W`, `${gpu2.tdp}W`],
+              ['Recommended PSU', `${gpu1.recommendedPSU}W`, `${gpu2.recommendedPSU}W`],
+              ['Power Connector', gpu1.powerConnector, gpu2.powerConnector],
+              ['Display Outputs', gpu1.displayOutputs, gpu2.displayOutputs],
+            ].map(([label, v1, v2], i) => (
+              <tr class={`border-b border-white/5 ${i % 2 ? 'bg-white/[0.01]' : ''}`}>
+                <td class="px-6 py-3 text-gray-500 font-medium">{label}</td>
+                <td class="px-6 py-3 text-center text-gray-200">{v1}</td>
+                <td class="px-6 py-3 text-center text-gray-200">{v2}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Benchmark Comparison -->
+    <section class="mb-12">
+      <h2 class="font-display font-bold text-2xl mb-6">Benchmark Comparison</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- GPU 1 color legend -->
+        <div class="flex items-center gap-3 text-sm">
+          <div class="w-4 h-2 rounded bg-gradient-to-r from-accent-indigo to-accent-cyan"></div>
+          <span class="text-gray-300">{g1Short}</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <div class="w-4 h-2 rounded bg-gradient-to-r from-red-500 to-orange-500"></div>
+          <span class="text-gray-300">{g2Short}</span>
+        </div>
+      </div>
+
+      <div class="card p-8 space-y-6 mt-4">
+        <BenchmarkChart label="1080p Gaming" value={gpu1.benchmarks.gaming1080p} compareValue={gpu2.benchmarks.gaming1080p} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
+        <BenchmarkChart label="1440p Gaming" value={gpu1.benchmarks.gaming1440p} compareValue={gpu2.benchmarks.gaming1440p} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
+        <BenchmarkChart label="4K Gaming" value={gpu1.benchmarks.gaming4k} compareValue={gpu2.benchmarks.gaming4k} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
+        <BenchmarkChart label="Ray Tracing" value={gpu1.benchmarks.rayTracing} compareValue={gpu2.benchmarks.rayTracing} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
+        <BenchmarkChart label="Productivity" value={gpu1.benchmarks.productivity} compareValue={gpu2.benchmarks.productivity} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
+        <BenchmarkChart label="AI / ML" value={gpu1.benchmarks.aiMl} compareValue={gpu2.benchmarks.aiMl} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
+      </div>
+    </section>
+
+    <!-- Winner Table -->
+    <section class="mb-12">
+      <h2 class="font-display font-bold text-2xl mb-6">Category Winners</h2>
+      <div class="card overflow-hidden">
+        <table class="w-full text-sm">
+          <tbody>
+            {[
+              ['1080p Gaming', 'gaming1080p'],
+              ['1440p Gaming', 'gaming1440p'],
+              ['4K Gaming', 'gaming4k'],
+              ['Ray Tracing', 'rayTracing'],
+              ['Productivity', 'productivity'],
+              ['AI / ML', 'aiMl'],
+            ].map(([label, key], i) => {
+              const w = winner(key);
+              return (
+                <tr class={`border-b border-white/5 ${i % 2 ? 'bg-white/[0.01]' : ''}`}>
+                  <td class="px-6 py-3 text-gray-500 font-medium">{label}</td>
+                  <td class="px-6 py-3 text-right">
+                    <span class={`text-sm font-semibold ${w === gpu1.name ? 'text-accent-indigo' : w === gpu2.name ? 'text-orange-400' : 'text-gray-400'}`}>
+                      {w === gpu1.name ? g1Short : w === gpu2.name ? g2Short : 'Tie'}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+            <tr class="bg-accent-indigo/5">
+              <td class="px-6 py-4 text-white font-semibold">Overall Winner</td>
+              <td class="px-6 py-4 text-right">
+                <span class="text-accent-indigo font-bold">{overallWinner.name.replace(/NVIDIA |AMD |Intel /, '')}</span>
+              </td>
+            </tr>
+            <tr class="bg-accent-emerald/5">
+              <td class="px-6 py-4 text-white font-semibold">Best Value</td>
+              <td class="px-6 py-4 text-right">
+                <span class="text-accent-emerald font-bold">{valueWinner.name.replace(/NVIDIA |AMD |Intel /, '')}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mb-12">
+      <h2 class="font-display font-bold text-2xl mb-6">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <div class="card p-6">
+          <h3 class="font-semibold text-white mb-2">Which is better, the {g1Short} or {g2Short}?</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            In overall performance, the {overallWinner.name} wins with a combined benchmark score of {Math.max(overallScore1, overallScore2)} vs {Math.min(overallScore1, overallScore2)}. The {overallWinner.name.replace(/NVIDIA |AMD |Intel /, '')} is stronger in most categories, while the {valueWinner.name.replace(/NVIDIA |AMD |Intel /, '')} offers the best value for money at {formatPrice(valueWinner.currentPrice)}.
+          </p>
+        </div>
+        <div class="card p-6">
+          <h3 class="font-semibold text-white mb-2">Is the {g1Short} worth it over the {g2Short}?</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            The {gpu1.name} costs {formatPrice(gpu1.currentPrice)} while the {gpu2.name} costs {formatPrice(gpu2.currentPrice)}{priceDiff > 0 ? `, a difference of $${priceDiff}` : ''}. 
+            {gpu1.currentPrice > gpu2.currentPrice 
+              ? `The extra cost gets you ${gpu1.vram > gpu2.vram ? `more VRAM (${gpu1.vram}GB vs ${gpu2.vram}GB)` : 'better performance across the board'}. Whether that's worth it depends on your resolution and use case.`
+              : `For ${gpu1.currentPrice < gpu2.currentPrice ? 'less money' : 'the same price'}, the ${gpu1.name.replace(/NVIDIA |AMD |Intel /, '')} ${overallScore1 >= overallScore2 ? 'delivers competitive or better performance' : 'trades some performance for better value'}.`
+            }
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Links back -->
+    <div class="flex flex-wrap gap-4">
+      <a href={`/gpu/${gpu1.slug}`} class="btn-secondary text-sm">
+        Full {g1Short} Review
+      </a>
+      <a href={`/gpu/${gpu2.slug}`} class="btn-secondary text-sm">
+        Full {g2Short} Review
+      </a>
+      <a href="/compare" class="btn-secondary text-sm">
+        More Comparisons
+      </a>
+    </div>
+  </article>
+</BaseLayout>
