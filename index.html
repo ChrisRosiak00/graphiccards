@@ -1362,9 +1362,14 @@
             </div>
 
             <div class="form-wrapper reveal">
-                <form id="inquiry-form" name="inquiry" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
-                    <!-- Netlify honeypot (hidden anti-spam field) -->
-                    <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+                <form id="inquiry-form" action="https://formsubmit.co/hovik@memes.com" method="POST">
+                    <!-- FormSubmit Configuration -->
+                    <input type="hidden" name="_subject" value="GraphicCards.com - New Acquisition Inquiry">
+                    <input type="hidden" name="_captcha" value="true">
+                    <input type="hidden" name="_template" value="box">
+                    <input type="hidden" name="_next" value="https://graphiccards.com#thank-you">
+                    <!-- Honeypot -->
+                    <input type="text" name="_honey" style="display:none">
 
                     <div class="form-grid">
                         <div class="form-group">
@@ -1645,37 +1650,12 @@
         ═══════════════════════════════════════════ */
         const form = document.getElementById('inquiry-form');
         const successMsg = document.getElementById('form-success');
-        const submitBtn = document.getElementById('submit-btn');
 
-        // Handle form submission via AJAX (Netlify Forms)
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitBtn.disabled = true;
-            submitBtn.querySelector('span').textContent = 'Sending...';
-
-            const formData = new FormData(form);
-
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            })
-            .then(response => {
-                if (response.ok) {
-                    form.style.display = 'none';
-                    successMsg.classList.add('show');
-                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    throw new Error('Form submission failed');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                submitBtn.disabled = false;
-                submitBtn.querySelector('span').textContent = 'Submit Inquiry';
-                alert('Something went wrong. Please try again or email us directly.');
-            });
-        });
+        // If URL has #thank-you, show success
+        if (window.location.hash === '#thank-you') {
+            form.style.display = 'none';
+            successMsg.classList.add('show');
+        }
 
         /* ═══════════════════════════════════════════
            SMOOTH SCROLL
