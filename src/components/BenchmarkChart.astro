@@ -1,0 +1,34 @@
+---
+interface Props {
+  label: string;
+  value: number;
+  maxValue?: number;
+  color?: string;
+  compareValue?: number;
+  compareColor?: string;
+}
+
+const { label, value, maxValue = 100, color = 'from-accent-indigo to-accent-cyan', compareValue, compareColor = 'from-red-500 to-orange-500' } = Astro.props;
+const pct = Math.round((value / maxValue) * 100);
+const comparePct = compareValue ? Math.round((compareValue / maxValue) * 100) : null;
+---
+
+<div class="space-y-1.5">
+  <div class="flex justify-between text-sm">
+    <span class="text-gray-400">{label}</span>
+    <div class="flex gap-3">
+      <span class="text-white font-semibold">{value}<span class="text-gray-500">/{maxValue}</span></span>
+      {comparePct !== null && (
+        <span class="text-gray-400 font-semibold">{compareValue}<span class="text-gray-600">/{maxValue}</span></span>
+      )}
+    </div>
+  </div>
+  <div class="benchmark-bar">
+    <div class={`benchmark-bar-fill bg-gradient-to-r ${color}`} style={`width: ${pct}%`}></div>
+  </div>
+  {comparePct !== null && (
+    <div class="benchmark-bar">
+      <div class={`benchmark-bar-fill bg-gradient-to-r ${compareColor}`} style={`width: ${comparePct}%`}></div>
+    </div>
+  )}
+</div>

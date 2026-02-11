@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GPUCard from '../components/GPUCard.astro';
+import { gpus, getBrandColor, getTierLabel } from '../data/gpus';
+
+const brands = [...new Set(gpus.map(g => g.brand))];
+const tiers = [...new Set(gpus.map(g => g.tier))];
+const series = [...new Set(gpus.map(g => g.series))];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "All Graphics Cards — Reviews & Specs",
+  "description": `Browse all ${gpus.length}+ graphics cards from NVIDIA, AMD, and Intel. Detailed specs, benchmarks, and pricing for every GPU.`,
+  "url": "https://graphiccards.com/gpus"
+};
+---
+
+<BaseLayout
+  title={`All Graphics Cards — ${gpus.length}+ GPUs Reviewed & Compared (2026) | GraphicCards.com`}
+  description={`Browse every graphics card from NVIDIA, AMD, and Intel. ${gpus.length}+ GPUs with detailed specs, benchmark scores, current pricing, and expert analysis. Find the perfect GPU for your build.`}
+  canonical="/gpus"
+  schema={schema}
+>
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <!-- Header -->
+    <header class="mb-12">
+      <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-gray-300 transition-colors">Home</a>
+        <span>/</span>
+        <span class="text-gray-300">All Graphics Cards</span>
+      </nav>
+
+      <h1 class="font-display font-extrabold text-4xl md:text-5xl tracking-tight mb-4">
+        All Graphics Cards
+      </h1>
+      <p class="text-lg text-gray-400 max-w-2xl">
+        Browse every GPU from NVIDIA, AMD, and Intel. {gpus.length}+ cards with detailed specs, benchmarks, and current pricing.
+      </p>
+    </header>
+
+    <!-- Filter chips -->
+    <div class="flex flex-wrap gap-2 mb-10">
+      <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-full bg-accent-indigo/20 text-accent-indigo border border-accent-indigo/30 transition-all" data-filter="all">
+        All ({gpus.length})
+      </button>
+      {brands.map(brand => (
+        <button
+          class="filter-btn px-4 py-2 text-sm font-medium rounded-full bg-white/[0.03] text-gray-400 border border-white/[0.06] hover:bg-white/[0.06] transition-all"
+          data-filter={`brand-${brand}`}
+        >
+          {brand} ({gpus.filter(g => g.brand === brand).length})
+        </button>
+      ))}
+      <span class="border-l border-white/10 mx-1"></span>
+      {(['flagship', 'high-end', 'mid-range', 'budget', 'entry'] as const).filter(t => gpus.some(g => g.tier === t)).map(tier => (
+        <button
+          class="filter-btn px-4 py-2 text-sm font-medium rounded-full bg-white/[0.03] text-gray-400 border border-white/[0.06] hover:bg-white/[0.06] transition-all"
+          data-filter={`tier-${tier}`}
+        >
+          {getTierLabel(tier)}
+        </button>
+      ))}
+    </div>
+
+    <!-- GPU Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="gpu-grid">
+      {gpus.map(gpu => (
+        <div class="gpu-item" data-brand={gpu.brand} data-tier={gpu.tier}>
+          <GPUCard gpu={gpu} />
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active', 'bg-accent-indigo/20', 'text-accent-indigo', 'border-accent-indigo/30');
+          b.classList.add('bg-white/[0.03]', 'text-gray-400', 'border-white/[0.06]');
+        });
+        btn.classList.add('active', 'bg-accent-indigo/20', 'text-accent-indigo', 'border-accent-indigo/30');
+        btn.classList.remove('bg-white/[0.03]', 'text-gray-400', 'border-white/[0.06]');
+
+        const filter = (btn as HTMLElement).dataset.filter;
+        document.querySelectorAll('.gpu-item').forEach(item => {
+          const el = item as HTMLElement;
+          if (filter === 'all') {
+            el.style.display = '';
+          } else if (filter?.startsWith('brand-')) {
+            el.style.display = el.dataset.brand === filter.replace('brand-', '') ? '' : 'none';
+          } else if (filter?.startsWith('tier-')) {
+            el.style.display = el.dataset.tier === filter.replace('tier-', '') ? '' : 'none';
+          }
+        });
+      });
+    });
+  </script>
+</BaseLayout>

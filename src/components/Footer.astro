@@ -1,0 +1,93 @@
+---
+import { gpus } from '../data/gpus';
+import { getTopComparisons } from '../data/gpus';
+
+const brands = ['NVIDIA', 'AMD', 'Intel'] as const;
+const topComparisons = getTopComparisons().slice(0, 6);
+---
+
+<footer class="border-t border-white/5 bg-bg-secondary mt-20">
+  <div class="max-w-7xl mx-auto px-6 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+      <!-- Brand -->
+      <div>
+        <a href="/" class="font-display font-bold text-xl tracking-tight">
+          <span class="gradient-text">Graphic</span><span class="text-gray-400">Cards</span><span class="text-gray-600">.com</span>
+        </a>
+        <p class="text-gray-500 text-sm mt-4 leading-relaxed">
+          The definitive resource for graphics card reviews, benchmarks, comparisons, and buying guides. Covering NVIDIA, AMD, and Intel GPUs.
+        </p>
+      </div>
+
+      <!-- Browse GPUs -->
+      <div>
+        <h3 class="font-display font-semibold text-white text-sm mb-4">Browse by Brand</h3>
+        <ul class="space-y-2">
+          {brands.map(brand => (
+            <li>
+              <a href={`/gpus?brand=${brand.toLowerCase()}`} class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+                {brand} Graphics Cards
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href="/gpus" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+              All Graphics Cards
+            </a>
+          </li>
+          <li>
+            <a href="/best-graphics-cards" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+              Best Graphics Cards 2026
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Popular Comparisons -->
+      <div>
+        <h3 class="font-display font-semibold text-white text-sm mb-4">Popular Comparisons</h3>
+        <ul class="space-y-2">
+          {topComparisons.map(comp => (
+            <li>
+              <a href={`/compare/${comp.slug}`} class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+                {comp.gpu1.name.replace(/NVIDIA |AMD |Intel /, '')} vs {comp.gpu2.name.replace(/NVIDIA |AMD |Intel /, '')}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Domain -->
+      <div>
+        <h3 class="font-display font-semibold text-white text-sm mb-4">This Domain</h3>
+        <ul class="space-y-2">
+          <li>
+            <a href="/#inquire" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+              GraphicCards.com is For Sale
+            </a>
+          </li>
+          <li>
+            <a href="/#market-data" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+              Market Data
+            </a>
+          </li>
+          <li>
+            <a href="mailto:hovik@memes.com" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+              Contact: hovik@memes.com
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-gray-600 text-sm">
+        &copy; {new Date().getFullYear()} GraphicCards.com — All rights reserved.
+      </p>
+      <p class="text-gray-600 text-xs">
+        Product names, logos, and brands are property of their respective owners. All GPU specifications and benchmarks are approximate.
+      </p>
+    </div>
+  </div>
+</footer>

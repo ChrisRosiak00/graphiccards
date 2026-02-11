@@ -1,0 +1,88 @@
+---
+import type { GPU } from '../data/gpus';
+import { getBrandColor, getTierLabel, formatPrice } from '../data/gpus';
+
+interface Props {
+  gpu: GPU;
+}
+
+const { gpu } = Astro.props;
+const brandColor = getBrandColor(gpu.brand);
+---
+
+<a href={`/gpu/${gpu.slug}`} class="card p-6 group block">
+  <div class="flex items-start justify-between mb-4">
+    <span
+      class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+      style={`background: ${brandColor}20; color: ${brandColor};`}
+    >
+      {gpu.brand}
+    </span>
+    <span class="text-xs text-gray-500 font-medium">{getTierLabel(gpu.tier)}</span>
+  </div>
+
+  <h3 class="font-display font-bold text-lg text-white mb-1 group-hover:text-accent-indigo transition-colors">
+    {gpu.name}
+  </h3>
+
+  <p class="text-sm text-gray-500 mb-4">{gpu.architecture} &middot; {gpu.vram}GB {gpu.vramType}</p>
+
+  <!-- Key specs -->
+  <div class="grid grid-cols-2 gap-3 mb-5">
+    <div>
+      <div class="text-xs text-gray-600">VRAM</div>
+      <div class="text-sm font-semibold text-gray-300">{gpu.vram}GB {gpu.vramType}</div>
+    </div>
+    <div>
+      <div class="text-xs text-gray-600">TDP</div>
+      <div class="text-sm font-semibold text-gray-300">{gpu.tdp}W</div>
+    </div>
+    <div>
+      <div class="text-xs text-gray-600">Boost Clock</div>
+      <div class="text-sm font-semibold text-gray-300">{gpu.boostClock} MHz</div>
+    </div>
+    <div>
+      <div class="text-xs text-gray-600">Price</div>
+      <div class="text-sm font-semibold text-white">{formatPrice(gpu.currentPrice)}</div>
+    </div>
+  </div>
+
+  <!-- Mini benchmark bars -->
+  <div class="space-y-2">
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span class="text-gray-500">1080p Gaming</span>
+        <span class="text-gray-400">{gpu.benchmarks.gaming1080p}/100</span>
+      </div>
+      <div class="benchmark-bar">
+        <div class="benchmark-bar-fill bg-gradient-to-r from-accent-indigo to-accent-cyan" style={`width: ${gpu.benchmarks.gaming1080p}%`}></div>
+      </div>
+    </div>
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span class="text-gray-500">1440p Gaming</span>
+        <span class="text-gray-400">{gpu.benchmarks.gaming1440p}/100</span>
+      </div>
+      <div class="benchmark-bar">
+        <div class="benchmark-bar-fill bg-gradient-to-r from-accent-purple to-accent-indigo" style={`width: ${gpu.benchmarks.gaming1440p}%`}></div>
+      </div>
+    </div>
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span class="text-gray-500">Ray Tracing</span>
+        <span class="text-gray-400">{gpu.benchmarks.rayTracing}/100</span>
+      </div>
+      <div class="benchmark-bar">
+        <div class="benchmark-bar-fill bg-gradient-to-r from-accent-emerald to-accent-cyan" style={`width: ${gpu.benchmarks.rayTracing}%`}></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+    <span class="text-sm font-semibold text-white">{formatPrice(gpu.currentPrice)}</span>
+    <span class="text-xs text-accent-indigo group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+      View Details
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </span>
+  </div>
+</a>
