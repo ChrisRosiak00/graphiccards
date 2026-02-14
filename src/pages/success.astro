@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Inquiry Received — GraphicCards.com"
+  description="Thank you for your inquiry about GraphicCards.com. We will respond within 24-48 hours."
+  canonical="/success"
+>
+  <div class="max-w-2xl mx-auto px-6 py-32 text-center">
+    <div class="w-20 h-20 mx-auto mb-8 rounded-full bg-accent-emerald/10 border-2 border-accent-emerald flex items-center justify-center">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+
+    <h1 class="font-display font-bold text-4xl tracking-tight mb-4 text-white">
+      Inquiry Received
+    </h1>
+    <p class="text-lg text-gray-400 leading-relaxed mb-8">
+      Thank you for your interest in <strong class="text-white">GraphicCards.com</strong>. Our team will review your inquiry and respond within <strong class="text-white">24–48 hours</strong>.
+    </p>
+
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href="/" class="btn-primary">
+        <span>Back to Home</span>
+      </a>
+      <a href="/best-graphics-cards" class="btn-secondary">
+        Browse GPUs
+      </a>
+    </div>
+  </div>
+</BaseLayout>

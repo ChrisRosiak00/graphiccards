@@ -1,0 +1,45 @@
+---
+import { getTopComparisons } from '../data/gpus';
+const topComparisons = getTopComparisons().slice(0, 6);
+---
+<footer class="border-t border-white/5 bg-bg-secondary mt-20">
+  <div class="max-w-7xl mx-auto px-6 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+      <div>
+        <a href="/" class="font-display font-bold text-xl tracking-tight">
+          <span class="gradient-text">Graphic</span><span class="text-gray-400">Cards</span><span class="text-gray-600">.com</span>
+        </a>
+        <p class="text-gray-500 text-sm mt-4 leading-relaxed">The definitive resource for graphics card reviews, benchmarks, comparisons, and buying guides.</p>
+      </div>
+      <div>
+        <h3 class="font-display font-semibold text-white text-sm mb-4">Browse</h3>
+        <ul class="space-y-2">
+          <li><a href="/gpus" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">All Graphics Cards</a></li>
+          <li><a href="/best-graphics-cards" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">Best Graphics Cards 2026</a></li>
+          <li><a href="/compare" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">Compare GPUs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-display font-semibold text-white text-sm mb-4">Popular Comparisons</h3>
+        <ul class="space-y-2">
+          {topComparisons.map(comp => (
+            <li><a href={`/compare/${comp.slug}`} class="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+              {comp.gpu1.name.replace(/NVIDIA |AMD |Intel /, '')} vs {comp.gpu2.name.replace(/NVIDIA |AMD |Intel /, '')}
+            </a></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-display font-semibold text-white text-sm mb-4">This Domain</h3>
+        <ul class="space-y-2">
+          <li><a href="/domain-for-sale" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">GraphicCards.com is For Sale</a></li>
+          <li><a href="mailto:hovik@memes.com" class="text-gray-500 hover:text-gray-300 text-sm transition-colors">Contact: hovik@memes.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-gray-600 text-sm">&copy; {new Date().getFullYear()} GraphicCards.com</p>
+      <p class="text-gray-600 text-xs">Product names, logos, and brands are property of their respective owners.</p>
+    </div>
+  </div>
+</footer>

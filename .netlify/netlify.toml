@@ -1,14 +1,24 @@
-plugins = []
 headers = []
 redirects = []
 
 [functions]
 
+[functions.emails]
+included_files = ["./emails/**"]
+
 [functions."*"]
 
+[[plugins]]
+origin = "config"
+package = "@netlify/plugin-emails"
+
+[plugins.inputs]
+
 [build]
-publish = "/Users/christopherrosiak/Documents/git/graphiccards"
-publishOrigin = "default"
+publish = "/Users/christopherrosiak/Documents/git/graphiccards/dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm run build"
 
 [build.environment]
 

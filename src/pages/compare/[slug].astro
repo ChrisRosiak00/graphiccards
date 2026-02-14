@@ -77,12 +77,12 @@ const faqSchema = {
 
   <article class="max-w-5xl mx-auto px-6 py-12">
     <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-8">
-      <a href="/" class="hover:text-gray-300 transition-colors">Home</a>
-      <span>/</span>
-      <a href="/compare" class="hover:text-gray-300 transition-colors">Compare</a>
-      <span>/</span>
-      <span class="text-gray-300">{g1Short} vs {g2Short}</span>
+    <nav class="breadcrumb-nav flex items-center gap-2 text-sm text-gray-500 mb-8">
+      <a href="/" class="hover:text-gray-300 transition-colors shrink-0">Home</a>
+      <span class="shrink-0">/</span>
+      <a href="/compare" class="hover:text-gray-300 transition-colors shrink-0">Compare</a>
+      <span class="shrink-0">/</span>
+      <span class="text-gray-300 truncate">{g1Short} vs {g2Short}</span>
     </nav>
 
     <!-- Header -->
@@ -96,7 +96,7 @@ const faqSchema = {
     </header>
 
     <!-- Quick Verdict -->
-    <div class="card p-8 mb-12 text-center" style="background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04));">
+    <div class="card p-5 sm:p-8 mb-12 text-center" style="background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04));">
       <div class="text-xs font-semibold uppercase tracking-widest text-accent-indigo mb-3">Quick Verdict</div>
       <p class="text-gray-300 leading-relaxed max-w-2xl mx-auto">
         <strong class="text-white">The {overallWinner.name} wins on overall performance</strong>, scoring higher across our benchmark suite. 
@@ -114,13 +114,13 @@ const faqSchema = {
     <!-- Side-by-Side Specs -->
     <section class="mb-12">
       <h2 class="font-display font-bold text-2xl mb-6">Specifications Comparison</h2>
-      <div class="card overflow-hidden">
+      <div class="card overflow-hidden table-scroll">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-white/10">
-              <th class="px-6 py-4 text-left text-gray-500 font-medium">Spec</th>
-              <th class="px-6 py-4 text-center font-semibold text-white">{g1Short}</th>
-              <th class="px-6 py-4 text-center font-semibold text-white">{g2Short}</th>
+              <th class="px-3 sm:px-6 py-4 text-left text-gray-500 font-medium">Spec</th>
+              <th class="px-3 sm:px-6 py-4 text-center font-semibold text-white text-xs sm:text-sm">{g1Short}</th>
+              <th class="px-3 sm:px-6 py-4 text-center font-semibold text-white text-xs sm:text-sm">{g2Short}</th>
             </tr>
           </thead>
           <tbody>
@@ -138,9 +138,9 @@ const faqSchema = {
               ['Display Outputs', gpu1.displayOutputs, gpu2.displayOutputs],
             ].map(([label, v1, v2], i) => (
               <tr class={`border-b border-white/5 ${i % 2 ? 'bg-white/[0.01]' : ''}`}>
-                <td class="px-6 py-3 text-gray-500 font-medium">{label}</td>
-                <td class="px-6 py-3 text-center text-gray-200">{v1}</td>
-                <td class="px-6 py-3 text-center text-gray-200">{v2}</td>
+                <td class="px-3 sm:px-6 py-3 text-gray-500 font-medium text-xs sm:text-sm">{label}</td>
+                <td class="px-3 sm:px-6 py-3 text-center text-gray-200 text-xs sm:text-sm">{v1}</td>
+                <td class="px-3 sm:px-6 py-3 text-center text-gray-200 text-xs sm:text-sm">{v2}</td>
               </tr>
             ))}
           </tbody>
@@ -164,7 +164,7 @@ const faqSchema = {
         </div>
       </div>
 
-      <div class="card p-8 space-y-6 mt-4">
+      <div class="card p-4 sm:p-8 space-y-6 mt-4">
         <BenchmarkChart label="1080p Gaming" value={gpu1.benchmarks.gaming1080p} compareValue={gpu2.benchmarks.gaming1080p} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
         <BenchmarkChart label="1440p Gaming" value={gpu1.benchmarks.gaming1440p} compareValue={gpu2.benchmarks.gaming1440p} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
         <BenchmarkChart label="4K Gaming" value={gpu1.benchmarks.gaming4k} compareValue={gpu2.benchmarks.gaming4k} color="from-accent-indigo to-accent-cyan" compareColor="from-red-500 to-orange-500" />
@@ -177,7 +177,7 @@ const faqSchema = {
     <!-- Winner Table -->
     <section class="mb-12">
       <h2 class="font-display font-bold text-2xl mb-6">Category Winners</h2>
-      <div class="card overflow-hidden">
+      <div class="card overflow-hidden table-scroll">
         <table class="w-full text-sm">
           <tbody>
             {[
